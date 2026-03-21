@@ -1,0 +1,27 @@
+name: Teste de Conexao OIDC AWS
+
+on:
+  push:
+    branches:
+      - main
+
+# Essa parte é OBRIGATÓRIA para o OIDC funcionar. Ela permite que o GitHub peça o token.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  testar-conexao:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar o código
+        uses: actions/checkout@v4
+
+      - name: Configurar credenciais da AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::SUA_CONTA_AWS:role/GitHubActions-Terraform-Role
+          aws-region: us-east-1 # Mude para a sua região
+
+      - name: Testar acesso listando buckets S3
+        run: aws s3 ls
